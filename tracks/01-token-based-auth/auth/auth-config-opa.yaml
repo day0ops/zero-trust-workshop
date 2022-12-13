@@ -1,0 +1,46 @@
+apiVersion: security.policy.gloo.solo.io/v2
+kind: ExtAuthPolicy
+metadata:
+  name: vault-oidc-auth
+  namespace: httpbin
+spec:
+  applyToRoutes:
+    # Apply to routes with this label
+    - route:
+        labels:
+          oauth: "true"
+  config:
+    server:
+      name: ext-auth-server
+      namespace: httpbin
+      cluster: $WEST_CLUSTER
+    glooAuth:
+      configs:
+        # ---------------------------------------------------
+        # AuthN with Vault OIDC
+        - oauth2:
+            oidcAuthorizationCode:
+              issuerUrl: ${VAULT_ADDR}/v1/identity/oidc/provider/gloo-provider
+              appUrl: https://${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+              callbackPath: /login
+              clientId: ${AUTH_CLIENT_ID}
+              clientSecretRef:
+                name: vault-oidc-auth-secret
+                namespace: httpbin
+              scopes:
+                - user
+                - groups
+              session:
+                cookieOptions:
+                  notSecure: true
+                  maxAge: 3600
+              headers:
+                idTokenHeader: "x-token"
+        # ---------------------------------------------------
+        # AuthZ with OPA
+        - opaAuth:
+            modules:
+              - name: only-allow-operators
+                namespace: httpbin
+            query: "data.gloo.authz.allow == true"
+        # ---------------------------------------------------

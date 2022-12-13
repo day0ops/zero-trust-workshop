@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: istiod-agent-init
+          image: gcr.io/gloo-mesh/gloo-mesh-istiod-agent:$GLOO_PLATFORM_VERSION
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: cacerts
+              mountPath: /etc/cacerts
+          args: 
+            - init-container
+          env:
+            - name: PILOT_CERT_PROVIDER
+              value: istiod
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.serviceAccountName
+      containers:
+        - name: istiod-agent
+          image: gcr.io/gloo-mesh/gloo-mesh-istiod-agent:$GLOO_PLATFORM_VERSION
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: cacerts
+              mountPath: /etc/cacerts
+          args: 
+            - sidecar
+          env:
+            - name: PILOT_CERT_PROVIDER
+              value: istiod
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.serviceAccountName
+      volumes:
+        - name: cacerts
+          secret: null
+          emptyDir:
+            medium: Memory

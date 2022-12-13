@@ -1,0 +1,25 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: ops-team
+  namespace: ops-team
+spec:
+  importFrom:
+    - workspaces:
+        - name: web-team
+  exportTo:
+    - workspaces:
+        - name: "*"
+      resources:
+        - kind: SERVICE
+          namespace: gloo-mesh-addons
+        - kind: VIRTUAL_DESTINATION
+          namespace: gloo-mesh-addons
+  options:
+    eastWestGateways:
+      - selector:
+          labels:
+            istio: eastwestgateway
+    serviceIsolation:
+      enabled: true
+      trimProxyConfig: true

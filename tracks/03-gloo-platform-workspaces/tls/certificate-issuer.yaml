@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ingress-tls-issuer
+  namespace: istio-ingress
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-acme-tls-key
+    solvers:
+      - http01:
+          ingress:
+            serviceType: ClusterIP
+        selector:
+          dnsNames:
+            - ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}

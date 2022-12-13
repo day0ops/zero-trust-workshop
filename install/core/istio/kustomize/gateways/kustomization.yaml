@@ -1,0 +1,7 @@
+resources:
+  - all.yaml
+patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      name: ".*gateway.*"

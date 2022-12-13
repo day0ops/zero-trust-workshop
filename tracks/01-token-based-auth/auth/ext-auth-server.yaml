@@ -1,0 +1,13 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: ExtAuthServer
+metadata:
+  name: ext-auth-server
+  namespace: httpbin
+spec:
+  destinationServer:
+    port:
+      number: 8083
+    ref:
+      cluster: $WEST_CLUSTER
+      name: ext-auth-service
+      namespace: gloo-mesh-addons

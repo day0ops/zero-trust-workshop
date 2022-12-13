@@ -1,0 +1,20 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualGateway
+metadata:
+  name: acme-solver-gw
+  namespace: httpbin
+spec:
+  workloads:
+    - selector:
+        labels:
+          istio: ingressgateway
+        cluster: ${WEST_CLUSTER}
+        namespace: istio-ingress
+  listeners:
+    - http: {}
+      port:
+        number: 80
+      allowedRouteTables:
+        - host: ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+          selector:
+            name: acme-solver-routing

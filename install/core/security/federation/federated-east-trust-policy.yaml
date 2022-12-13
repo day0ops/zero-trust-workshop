@@ -1,0 +1,22 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: RootTrustPolicy
+metadata:
+  name: root-trust-policy-east-mesh
+  namespace: gloo-mesh
+spec:
+  applyToMeshes:
+    - istio:
+        selector:
+          app: istiod
+          istio: istiod
+          mesh: ${EAST_CLUSTER}
+        namespace: istio-system
+  config:
+    agentCa:
+      vault:
+        caPath: pki/root/sign-intermediate
+        csrPath: istio-east-mesh-pki-int/intermediate/generate/exported
+        kubernetesAuth:
+          mountPath: /v1/auth/kube-east-mesh-auth
+          role: gen-int-ca-istio-east-mesh
+        server: ${VAULT_ADDR}

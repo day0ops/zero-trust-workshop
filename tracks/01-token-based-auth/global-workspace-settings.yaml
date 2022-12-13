@@ -1,0 +1,11 @@
+apiVersion: admin.gloo.solo.io/v2
+kind: WorkspaceSettings
+metadata:
+  name: one-for-all
+  namespace: gloo-mesh
+spec:
+  options:
+    serviceIsolation:
+      enabled: false
+    federation:
+      enabled: false

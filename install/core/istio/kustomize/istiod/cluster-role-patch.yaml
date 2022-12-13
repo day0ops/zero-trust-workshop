@@ -1,0 +1,6 @@
+- op: add
+  path: /rules/0
+  value: { "apiGroups": ["internal.gloo.solo.io"], "resources": ["issuedcertificates"], "verbs": ["list","watch"]}
+- op: add
+  path: /rules/0
+  value: { "apiGroups": [""], "resources": ["serviceaccounts"], "verbs": ["list","watch"]}

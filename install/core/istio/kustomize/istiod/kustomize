@@ -1,0 +1,10 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cat <&0 > $DIR/all.yaml
+
+envsubst < $DIR/deployment-patch-template.yaml > $DIR/deployment-patch.yaml
+envsubst < $DIR/append-mesh-labels-template.yaml > $DIR/append-mesh-labels.yaml
+
+kustomize build $DIR && rm -f $DIR/all.yaml $DIR/deployment-patch.yaml $DIR/append-mesh-labels.yaml

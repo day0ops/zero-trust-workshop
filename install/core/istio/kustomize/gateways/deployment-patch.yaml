@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default
+spec:
+  template:
+    spec:
+      containers:
+        - name: istio-proxy
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sleep
+                  - "25"

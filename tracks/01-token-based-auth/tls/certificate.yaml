@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: httpbin-cert
+  namespace: istio-ingress
+spec:
+  secretName: httpbin-tls
+  issuerRef:
+    name: ingress-tls-issuer
+    kind: Issuer
+  commonName: ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+  dnsNames:
+    - ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}

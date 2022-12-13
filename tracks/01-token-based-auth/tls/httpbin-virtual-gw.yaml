@@ -1,0 +1,26 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: VirtualGateway
+metadata:
+  name: httpbin-gw
+  namespace: httpbin
+spec:
+  workloads:
+    - selector:
+        labels:
+          istio: ingressgateway
+        cluster: ${WEST_CLUSTER}
+        namespace: istio-ingress
+  listeners:
+    - http: {}
+      port:
+        number: 443
+      # --------------------------------------
+      # Enable TLS
+      tls:
+        mode: SIMPLE
+        secretName: httpbin-tls
+      # --------------------------------------
+      allowedRouteTables:
+        - host: ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+          selector:
+            name: httpbin-routing

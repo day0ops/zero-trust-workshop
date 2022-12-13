@@ -1,0 +1,105 @@
+# Unique name of the workload cluster by which cluster is referenced in all Gloo Mesh configurations
+cluster: ""
+# Number of access logs to buffer per Envoy proxy
+accessLogsBufferSize: 50
+# Set the logger to development mode, which can cause panics. Do not use in production.
+devMode: false
+# Debug mode. Do not use in production.
+verbose: false
+
+# Set to true to permit unencrypted and unauthenticated communication between management plane and data planes. Do not use in production.
+insecure: false
+
+# Configuration for the istiod sidecar deployment
+istiodSidecar:
+  createRoleBinding: true
+  istiodServiceAccount:
+    name: istiod
+    namespace: istio-system
+
+# Enable leader election for the HA deployment
+leaderElection: true
+# Maximum message size for gRPC messages sent and received by the management server
+maxGrpcMessageSize: "4294967295"
+# Number of metrics messages to buffer per Envoy proxy
+metricsBufferSize: 50
+
+gloo-network-agent:
+  enabled: false
+
+# Sidecar acceleration
+sidecar-accel:
+  enabled: false
+
+ext-auth-service:
+  enabled: false
+  extraTemplateAnnotations:
+    proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+
+rate-limiter:
+  enabled: false
+  extraTemplateAnnotations:
+    proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+
+relay:
+  authority: gloo-mesh-mgmt-server.gloo-mesh
+  clientTlsSecret:
+    name: relay-client-tls-secret
+  rootTlsSecret:
+    name: relay-root-tls-secret
+  serverAddress: ""
+  tokenSecret:
+    key: token
+    name: relay-identity-token-secret
+    namespace: ""
+
+# Configuration for the agent deployment
+glooMeshAgent:
+  enabled: true
+  env:
+    - name: POD_NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
+  # Required for OpenShift installations: Allow the pod to be assigned a dynamic user ID.
+  floatingUserId: false
+  # Image details
+  image:
+    pullPolicy: IfNotPresent
+    registry: gcr.io/gloo-mesh
+    repository: gloo-mesh-agent
+
+  # Service type
+  serviceType: ClusterIP
+  ports:
+    # Port for agent service
+    grpc: 9977
+    http: 9988
+    # Port on which to serve internal Prometheus metrics for the agent app
+    stats: 9091
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+  # Static user ID to run the containers as. Unused if floatingUserId is 'true'
+  runAsUser: 10101
+  # Optional configuration for the deployed containers
+  sidecars: {}
+
+# Subchart for setting up managed installations of Control Planes and Gateways in workload clusters (Disabled by default)
+managedInstallations:
+  enabled: false
+  cluster: ""
+  revision: gm
+  controlPlane:
+    enabled: true
+    overrides: {}
+  defaultRevision: true
+  eastWestGateways: null
+  images:
+    hub: ${ISTIO_IMAGE_REPO}
+    tag: ${ISTIO_IMAGE_TAG}
+  northSouthGateways:
+    - enabled: true
+      name: istio-ingressgateway
+      overrides: {}

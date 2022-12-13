@@ -1,0 +1,26 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: acme-solver-routing
+  namespace: httpbin
+spec:
+  hosts:
+    - ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+  virtualGateways:
+    - name: acme-solver-gw
+      namespace: httpbin
+  http:
+    # Route for the acme-solver app
+    - name: acme-solver-ingress
+      labels:
+        route: acme-solver
+      matchers:
+        - uri:
+            exact: /.well-known/acme-challenge/${ACME_SOLVER_TOKEN}
+      forwardTo:
+        destinations:
+          - ref:
+              name: ${ACME_SOLVER_SERVICE}
+              namespace: istio-ingress
+            port:
+              number: 8089

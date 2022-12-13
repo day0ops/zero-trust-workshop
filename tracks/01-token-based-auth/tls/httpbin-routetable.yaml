@@ -1,0 +1,23 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: RouteTable
+metadata:
+  name: httpbin-routing
+  namespace: httpbin
+spec:
+  hosts:
+    - ${PUBLIC_INSTRUQT_SANDBOX_ENDPOINT}
+  virtualGateways:
+    - name: httpbin-gw
+      namespace: httpbin
+  http:
+    # Route for the httpbin app
+    - name: httpbin-ingress
+      labels:
+        route: httpbin
+      forwardTo:
+        destinations:
+          - ref:
+              name: httpbin
+              namespace: httpbin
+            port:
+              number: 8000

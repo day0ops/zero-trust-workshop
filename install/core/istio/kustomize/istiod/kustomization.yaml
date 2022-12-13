@@ -1,0 +1,12 @@
+resources:
+  - all.yaml
+patches:
+  - path: deployment-patch.yaml
+    target:
+      kind: Deployment
+      labelSelector: app=istiod, istio=pilot
+patchesJson6902:
+  - path: cluster-role-patch.yaml
+    target:
+      kind: ClusterRole
+      name: "istiod-clusterrole-.*"

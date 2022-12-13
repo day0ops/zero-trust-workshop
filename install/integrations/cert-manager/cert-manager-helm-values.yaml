@@ -1,0 +1,8 @@
+installCRDs: false
+
+serviceAccount:
+  create: true
+  name: cert-manager
+
+prometheus:
+  enabled: false
