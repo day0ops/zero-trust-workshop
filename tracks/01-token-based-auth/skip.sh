@@ -11,7 +11,7 @@ kubectl --context $WEST_CONTEXT apply -f $DIR/../../install/apps/httpbin/httpbin
 envsubst < <(cat $DIR/tls/certificate-issuer.yaml) | kubectl --context $WEST_CONTEXT apply -f -
 envsubst < <(cat $DIR/tls/certificate.yaml) | kubectl --context $WEST_CONTEXT apply -f -
 
-sleep 5
+sleep 10
 
 export ACME_SOLVER_TOKEN=$(kubectl --context $WEST_CONTEXT get orders -n istio-ingress -o jsonpath='{.items[].status.authorizations[0].challenges[?(@.type=="http-01")].token}')
 export ACME_SOLVER_SERVICE=$(kubectl --context $WEST_CONTEXT get svc -n istio-ingress --selector=acme.cert-manager.io/http01-solver=true -o jsonpath='{.items[].metadata.name}')
@@ -19,7 +19,7 @@ export ACME_SOLVER_SERVICE=$(kubectl --context $WEST_CONTEXT get svc -n istio-in
 envsubst < <(cat $DIR/tls/acme-solver-routetable.yaml) | kubectl --context $WEST_CONTEXT apply -f -
 envsubst < <(cat $DIR/tls/acme-solver-virtual-gw.yaml) | kubectl --context $WEST_CONTEXT apply -f -
 
-sleep 5
+sleep 60
 
 envsubst < <(cat $DIR/tls/httpbin-routetable.yaml) | kubectl --context $WEST_CONTEXT apply -f -
 envsubst < <(cat $DIR/tls/httpbin-virtual-gw.yaml) | kubectl --context $WEST_CONTEXT apply -f -
